@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mermaid Diagram</title>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10.9.3/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: false });
+
+    window.downloadPNG = () => {
+      html2canvas(document.getElementById("mermaid")).then((canvas) => {
+        const link = document.createElement("a");
+        link.download = "mermaid-diagram.png";
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const hashCode = decodeURIComponent(window.location.hash.substring(1));
+      const container = document.getElementById("mermaid");
+
+      if (!hashCode || !hashCode.trim().match(/^(flowchart|sequenceDiagram|classDiagram|stateDiagram|erDiagram|gantt|pie)/)) {
+        container.innerHTML = `<p style="color:red;"><b>Syntax Error:</b> Mermaid code is missing or invalid.</p>`;
+        return;
+      }
+
+      const pre = document.createElement("pre");
+      pre.className = "mermaid";
+      pre.textContent = hashCode.trim();
+      container.appendChild(pre);
+
+      mermaid.run().catch((error) => {
+        container.innerHTML = `<p style="color:red;"><b>Render Error:</b> ${error.message}</p>`;
+      });
+    });
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background: #f9f9f9; }
+    #mermaid { background: #fff; padding: 20px; border: 1px solid #ccc; display: inline-block; margin-top: 20px; }
+    button { padding: 10px 16px; font-size: 16px; margin-top: 20px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>Generated Diagram</h2>
+  <div id="mermaid"></div>
+  <br />
+  <button onclick="downloadPNG()">Download as PNG</button>
+</body>
+</html>
